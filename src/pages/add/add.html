@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title *ngIf="!editingComponent">Adicionar componente</ion-title>
+    <ion-title *ngIf="editingComponent">Editar componente</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <form #form="ngForm" (ngSubmit)="saveComponent(form)" validate>
+    <ion-list>
+      <ion-label>Componente:</ion-label>
+      <ion-item>
+        <ion-label>Tipo:</ion-label>
+        <ion-select [selectOptions]="customSelect" [(ngModel)]="componentType" name="componentType" interface="action-sheet" (ionChange)="onSelectChange($event)"
+          required>
+          <ion-option *ngFor="let type of componentTypes" value={{type}}>{{typesInfo[type].title}}</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <div *ngIf="typeFields?.length > 0">
+      <ion-list>
+        <ion-label>Nome do componente:</ion-label>
+        <ion-item>
+          <ion-label>Nome:</ion-label>
+          <ion-input [(ngModel)]="componentName" name="componentName" type="text" placeholder="" required></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-list>
+        <ion-label>Campos:</ion-label>
+        <ion-item *ngFor="let field of typeFields">
+          <ion-label>{{typesInfo[componentType].fields[field].label}}</ion-label>
+          <ion-input [required]="typesInfo[componentType].fields[field].required" [(ngModel)]="typesInfo[componentType].fields[field].value"
+            name={{typesInfo[componentType].fields[field].name}} type={{typesInfo[componentType].fields[field].type}} placeholder={{typesInfo[componentType].fields[field].placeholder}}></ion-input>
+        </ion-item>
+
+      </ion-list>
+      <button col-12 ion-button color="secondary" *ngIf="!editingComponent">Adicionar</button>
+      <button col-12 ion-button color="secondary" *ngIf="editingComponent">Guardar</button>
+    </div>
+
+  </form>
+
+</ion-content>

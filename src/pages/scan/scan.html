@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Componentes na rede</ion-title>
+
+    <ion-buttons end>
+      <button ion-button (click)="toggleLogs()" *ngIf="!showLogs">logs</button>
+      <button ion-button (click)="toggleLogs()" *ngIf="showLogs">pesquisa</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <div class="components-container" *ngIf="components?.length && !showLogs">
+    <ion-list>
+      <ion-item-sliding col-xs-12 col-sm-9 col-md-6 col-lg-5 col-xl-4 no-padding #slidingItem *ngFor="let component of components; let i = index">
+
+        <ion-item-options side="left">
+          <button ion-button color="secondary" (click)="addComponent(component)">
+            <ion-icon name="add"></ion-icon>
+            Adicionar
+          </button>
+        </ion-item-options>
+
+        <ion-item text-wrap>
+          <ion-label>{{component.componentName}}</ion-label>
+
+          <!-- button -->
+          <ion-buttons item-content end *ngIf="component.componentType === 'button'">
+            <button icon-end ion-button round>
+              <span>Push</span>
+              <ion-icon name="power"></ion-icon>
+            </button>
+          </ion-buttons>
+
+          <!-- switch -->
+          <ion-toggle *ngIf="component.componentType === 'switch'"></ion-toggle>
+
+        </ion-item>
+      </ion-item-sliding>
+    </ion-list>
+  </div>
+
+  <ion-spinner large col-12 name="dots" *ngIf="!components?.length && scanning && !showLogs"></ion-spinner>
+
+  <div class="message-container" *ngIf="!components?.length && !scanning && !showLogs">
+    {{msg}}
+  </div>
+
+  <div class="logs-container" *ngIf="showLogs">
+    {{logs}}
+  </div>
+</ion-content>
+
+<ion-footer padding>
+  <button ion-button col-12 (click)="goToRoot($event)">Sair</button>
+</ion-footer>

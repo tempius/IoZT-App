@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-navbar>
+    <!-- button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button -->
+    <ion-title>IoZT</ion-title>
+
+    <ion-buttons end *ngIf="components?.length">
+      <button ion-button icon-only (click)="reloadHome($event)">
+        <ion-icon name="refresh"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <div class="components-container" *ngIf="components?.length">
+    <ion-list reorder={{reorder}} (ionItemReorder)="reorderComponents($event)">
+      <ion-item-sliding col-xs-12 col-sm-9 col-md-6 col-lg-5 col-xl-4 no-padding #slidingItem *ngFor="let component of components; let i = index"
+        (ionDrag)="toggleComponentOptions(slidingItem)">
+
+        <ion-item-options side="left">
+          <button ion-button (click)="editComponent(component, i)" *ngIf="!reorder">
+            <ion-icon name="settings"></ion-icon>
+            Editar
+          </button>
+          <button ion-button color="danger" (click)="deleteComponent(component, i)" *ngIf="reorder">
+            <ion-icon name="trash"></ion-icon>
+            Remover
+          </button>
+        </ion-item-options>
+
+        <ion-item text-wrap>
+          <ion-label>{{component.componentName}}</ion-label>
+
+          <!-- button -->
+          <ion-buttons item-content end *ngIf="component.componentType === 'button' && component.connection">
+            <button icon-end ion-button round (click)="buttonPress(component)" *ngIf="component.state !== undefined">
+              <span>Push</span>
+              <ion-icon name="power"></ion-icon>
+            </button>
+            <ion-spinner item-end name="dots" *ngIf="component.state === undefined"></ion-spinner>
+          </ion-buttons>
+
+          <!-- switch -->
+          <ion-toggle *ngIf="component.componentType === 'switch' && component.state !== undefined && component.connection" checked={{component.state}}
+            (ionChange)="switchChange($event, component)"></ion-toggle>
+          <ion-spinner item-end name="dots" *ngIf="component.componentType === 'switch' && component.state === undefined && component.connection"></ion-spinner>
+
+          <!-- connection failed -->
+          <ion-buttons item-content end *ngIf="!component.connection">
+            <button ion-button icon-end color="light" (click)="reconnectComponent(component)">
+              Falhou
+              <ion-icon name="link"></ion-icon>
+            </button>
+          </ion-buttons>
+
+        </ion-item>
+      </ion-item-sliding>
+    </ion-list>
+  </div>
+
+  <ion-fab bottom right>
+    <button ion-fab (click)="toggleReorder()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </button>
+    <ion-fab-list side="left">
+      <button ion-fab (click)="addComponent($event)" color="secondary">
+        <ion-icon name="add"></ion-icon>
+      </button>
+      <button ion-fab (click)="goToScanComponentsPage($event)" color="dark">
+        <ion-icon name="search"></ion-icon>
+      </button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-content>

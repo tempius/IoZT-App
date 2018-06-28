@@ -1,0 +1,11 @@
+page-scan {
+    ion-content {
+        ion-item-sliding {
+            margin: auto;
+        }
+        .message-container,
+        .logs-container {
+            white-space: pre-line;
+        }
+    }
+}
