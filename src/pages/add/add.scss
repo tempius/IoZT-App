@@ -4,6 +4,10 @@ page-add {
     }
     ion-content {
         form {
+            ion-list.fields-container {
+                margin-right: auto;
+                margin-left: auto;
+            }
             button:last-child {
                 margin-bottom: 20px;
             }
