@@ -159,10 +159,7 @@ export class HomePage {
 
   toggleReorder() {
     this.reorder = !this.reorder;
-
-    // if (!this.reorder) localStorage.setItem('Components', JSON.stringify(this.storedComponents));
     if (this.componentOptions) this.componentOptions.close();
-
     // this.content.resize();
   }
 
@@ -192,6 +189,8 @@ export class HomePage {
                 component.socket.close();
               }
               this.components.splice(index, 1);
+              this.storedComponents.splice(index, 1);
+              localStorage.setItem('Components', JSON.stringify(this.storedComponents));
             }
           }
         ]
