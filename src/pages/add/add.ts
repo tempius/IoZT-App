@@ -21,10 +21,11 @@ export class AddPage {
   /** form fields */
   componentType: string;
   componentName: string;
+  fieldProtocol: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string, types: Array<{}>, selectOptions: Object };
   fieldAddress: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string };
+  fieldPort: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string };
   fieldActionI: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string };
   fieldActionO: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string };
-  fieldWebsocketAddress: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string };
 
   /** component edit */
   component: any;
@@ -46,6 +47,23 @@ export class AddPage {
     };
 
     /** form fields */
+    this.fieldProtocol = {
+      label: 'Protocol:',
+      type: 'select',
+      required: true,
+      placeholder: '[PROTOCOL]',
+      value: '',
+      name: 'protocol',
+      types: [
+        { text: 'HTTP', value: 'http' },
+        { text: 'HTTPS', value: 'https' },
+        { text: 'WEBSOCKET', value: 'ws' },
+      ],
+      selectOptions: {
+        title: 'Selecionar o protocolo',
+        subtitle: '',
+      },
+    };
     this.fieldAddress = {
       label: 'Address:',
       type: 'text',
@@ -53,6 +71,14 @@ export class AddPage {
       placeholder: '[URL]',
       value: '',
       name: 'address',
+    };
+    this.fieldPort = {
+      label: 'Port:',
+      type: 'number',
+      required: false,
+      placeholder: '[PORT] (optional)',
+      value: '',
+      name: 'port',
     };
     this.fieldActionI = {
       label: 'Action ON:',
@@ -70,30 +96,25 @@ export class AddPage {
       value: '',
       name: 'actionO',
     };
-    this.fieldWebsocketAddress = {
-      label: 'WS address:',
-      type: 'text',
-      required: false,
-      placeholder: '[URL] (optional)',
-      value: '',
-      name: 'websocketAddress'
-    };
 
     this.typesInfo = {
       button: {
         title: 'Botão',
         fields: {
+          protocol: this.fieldProtocol,
           address: this.fieldAddress,
+          port: this.fieldPort,
           actionI: this.fieldActionI,
         },
       },
       switch: {
         title: 'Interruptor',
         fields: {
+          protocol: this.fieldProtocol,
           address: this.fieldAddress,
+          port: this.fieldPort,
           actionI: this.fieldActionI,
           actionO: this.fieldActionO,
-          websocketAddress: this.fieldWebsocketAddress,
         },
       },
     };
@@ -113,7 +134,7 @@ export class AddPage {
 
   }
 
-  onSelectChange(selectedValue: any) {
+  onSelectTypeChange(selectedValue: any) {
     this.typeFields = Object.keys(this.typesInfo[selectedValue].fields);
   }
 
@@ -130,7 +151,7 @@ export class AddPage {
 
   closeAllWebsockets() {
     this.components.forEach(component => {
-      if (component.websocketAddress) this.closeWebsocket(component);
+      if (component.protocol === 'ws') this.closeWebsocket(component);
     });
   }
 
@@ -153,8 +174,8 @@ export class AddPage {
     }
     else {
       Object.keys(form.controls).forEach(key => {
-        if (form.controls[key].status === 'INVALID') {
-          let inputField: HTMLElement = <HTMLElement>document.querySelector('input[ng-reflect-name=' + key + ']');
+        if (form.controls[key].status === 'INVALID' && this.typesInfo[this.componentType].fields[key] && this.typesInfo[this.componentType].fields[key].type !== 'select' && this.typesInfo[this.componentType].fields[key].required) {
+          let inputField: HTMLElement = <HTMLElement>document.querySelector('ion-input.'+key+' input');
           inputField.focus();
           inputField.blur();
           inputField.focus();

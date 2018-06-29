@@ -17,8 +17,8 @@ export class HomePage {
   @ViewChild(Content) content: Content;
   componentOptions: ItemSliding;
   removeAlert: any;
-  storedComponents: Array<{ componentType: string, componentName: string, address: string, actionI: string, actionO: string, websocketAddress?: string }>;
-  components: Array<{ componentType: string, componentName: string, state?: boolean, address: string, actionI: string, actionO: string, websocketAddress?: string, timer?: any, connection?: boolean, socket?: WebSocket }>;
+  storedComponents: Array<{ componentType: string, componentName: string, protocol: string, address: string, port?: string, actionI: string, actionO: string }>;
+  components: Array<{ componentType: string, componentName: string, state?: boolean, protocol: string, address: string, port?: string, actionI: string, actionO: string, timer?: any, connection?: boolean, socket?: WebSocket }>;
   reorder: boolean;
   timeout: number = 3000;
 
@@ -89,7 +89,8 @@ export class HomePage {
     // Open a connection
     const that = this;
     component.timer = null;
-    component.socket = new WebSocket(component.websocketAddress);
+    const port = component.port ? ':' + component.port : '';
+    component.socket = new WebSocket(component.protocol + '://' + component.address + port);
 
     // When a connection is made
     component.socket.onopen = function () {
@@ -99,7 +100,7 @@ export class HomePage {
     // When data is received
     component.socket.onmessage = function (event) {
       clearTimeout(component.timer);
-      component.state = event.data === 'ON' ? true : false;
+      component.state = event.data === 'on' ? true : false;
     }
 
     // A connection could not be made
@@ -126,18 +127,19 @@ export class HomePage {
 
   closeAllWebsockets() {
     this.components.forEach(component => {
-      if (component.websocketAddress) this.closeWebsocket(component);
+      if (component.protocol === 'ws') this.closeWebsocket(component);
     });
   }
 
   connectComponent(component) {
     component.state = undefined;
     component.connection = true;
-    if (component.websocketAddress) {
+    if (component.protocol === 'ws') {
       this.websocketEventAdd(component);
     }
     else {
-      this.http.get(component.address).timeout(this.timeout).subscribe(
+      const port = component.port ? ':' + component.port : '';
+      this.http.get(component.protocol + '://' + component.address + port).timeout(this.timeout).subscribe(
         data => {
           component.state = false;
         },
@@ -185,7 +187,7 @@ export class HomePage {
           {
             text: 'Remover',
             handler: () => {
-              if (component.websocketAddress && component.connection) {
+              if (component.protocol === 'ws' && component.connection) {
                 component.socket.close();
               }
               this.components.splice(index, 1);
@@ -216,16 +218,17 @@ export class HomePage {
   }
 
   buttonPress(component) {
-    this.sendAction(component, component.address + component.actionI);
+    const port = component.port ? ':' + component.port : '';
+    this.sendAction(component, component.protocol + '://' + component.address + port + component.actionI);
   }
 
   switchChange(event, component) {
     if (event.checked !== component.state) {
-      if (component.websocketAddress) {
+      if (component.protocol === 'ws') {
         //verify connection
         if (component.socket.readyState === component.socket.OPEN) {
           // send data to the server
-          component.socket.send(event.checked ? 'ON' : 'OFF');
+          component.socket.send(event.checked ? 'on' : 'off');
           component.timer = setTimeout(() => {
             this.closeWebsocket(component);
           }, this.timeout);
@@ -236,7 +239,8 @@ export class HomePage {
         }
       }
       else {
-        this.sendAction(component, component.address + (event.checked ? component.actionI : component.actionO), event);
+        const port = component.port ? ':' + component.port : '';
+        this.sendAction(component, component.protocol + '://' + component.address + port + (event.checked ? component.actionI : component.actionO), event);
       }
     }
   }

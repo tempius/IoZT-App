@@ -12,9 +12,9 @@
       <ion-label>Componente:</ion-label>
       <ion-item>
         <ion-label>Tipo:</ion-label>
-        <ion-select [selectOptions]="customSelect" [(ngModel)]="componentType" name="componentType" interface="action-sheet" (ionChange)="onSelectChange($event)"
+        <ion-select [selectOptions]="customSelect" [(ngModel)]="componentType" name="componentType" interface="action-sheet" (ionChange)="onSelectTypeChange($event)"
           required>
-          <ion-option *ngFor="let type of componentTypes" value={{type}}>{{typesInfo[type].title}}</ion-option>
+          <ion-option *ngFor="let type of componentTypes" [value]="type">{{typesInfo[type].title}}</ion-option>
         </ion-select>
       </ion-item>
     </ion-list>
@@ -32,8 +32,14 @@
         <ion-label>Campos:</ion-label>
         <ion-item *ngFor="let field of typeFields">
           <ion-label>{{typesInfo[componentType].fields[field].label}}</ion-label>
-          <ion-input [required]="typesInfo[componentType].fields[field].required" [(ngModel)]="typesInfo[componentType].fields[field].value"
-            name={{typesInfo[componentType].fields[field].name}} type={{typesInfo[componentType].fields[field].type}} placeholder={{typesInfo[componentType].fields[field].placeholder}}></ion-input>
+
+          <ion-input *ngIf="typesInfo[componentType].fields[field].type !== 'select'" [required]="typesInfo[componentType].fields[field].required"
+            [(ngModel)]="typesInfo[componentType].fields[field].value" [name]="typesInfo[componentType].fields[field].name" [class]="typesInfo[componentType].fields[field].name"
+            [type]="typesInfo[componentType].fields[field].type" step="1" [placeholder]="typesInfo[componentType].fields[field].placeholder"></ion-input>
+
+          <ion-select item-content *ngIf="typesInfo[componentType].fields[field].type === 'select'" [selectOptions]="typesInfo[componentType].fields[field].selectOptions" [(ngModel)]="typesInfo[componentType].fields[field].value" [name]="typesInfo[componentType].fields[field].name" interface="action-sheet" [required]="typesInfo[componentType].fields[field].required">
+            <ion-option *ngFor="let type of typesInfo[componentType].fields[field].types" [value]="type.value">{{type.text}}</ion-option>
+          </ion-select>
         </ion-item>
 
       </ion-list>

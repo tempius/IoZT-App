@@ -45,8 +45,7 @@ export class ScanPage {
         data => {
           if (data.componentType) {
             this.logs += 'success: ' + ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index + '\n';
-            data.address = 'http://' + ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index;
-            data.websocketAddress = 'ws://' + ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index + ':81';
+            data.address = ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index;
             this.components.push(data);
           }
           else {
