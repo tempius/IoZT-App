@@ -1,2 +1,5 @@
 # IoZT-App
 App to manage IoZT devices, made with Ionic framework.
+
+build command:
+    ionic cordova build android --prod
