@@ -12,6 +12,7 @@ export class AddPage {
   typesInfo: {
     button: { title: string, fields: {} },
     switch: { title: string, fields: {} },
+    "double switch": { title: string, fields: {} },
   };
   componentTypes: Array<{}>;
   typeFields: Array<{}>;
@@ -26,6 +27,8 @@ export class AddPage {
   fieldPort: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string };
   fieldActionI: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string };
   fieldActionO: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string };
+  fieldActionI2: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string };
+  fieldActionO2: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string };
 
   /** component edit */
   component: any;
@@ -96,6 +99,22 @@ export class AddPage {
       value: '',
       name: 'actionO',
     };
+    this.fieldActionI2 = {
+      label: 'Action ON:',
+      type: 'text',
+      required: true,
+      placeholder: '[URI]',
+      value: '',
+      name: 'actionI2',
+    };
+    this.fieldActionO2 = {
+      label: 'Action OFF:',
+      type: 'text',
+      required: true,
+      placeholder: '[URI]',
+      value: '',
+      name: 'actionO2',
+    };
 
     this.typesInfo = {
       button: {
@@ -115,6 +134,18 @@ export class AddPage {
           port: this.fieldPort,
           actionI: this.fieldActionI,
           actionO: this.fieldActionO,
+        },
+      },
+      "double switch": {
+        title: 'Interruptor duplo',
+        fields: {
+          protocol: this.fieldProtocol,
+          address: this.fieldAddress,
+          port: this.fieldPort,
+          actionI: this.fieldActionI,
+          actionO: this.fieldActionO,
+          actionI2: this.fieldActionI2,
+          actionO2: this.fieldActionO2,
         },
       },
     };
@@ -175,7 +206,7 @@ export class AddPage {
     else {
       Object.keys(form.controls).forEach(key => {
         if (form.controls[key].status === 'INVALID' && this.typesInfo[this.componentType].fields[key] && this.typesInfo[this.componentType].fields[key].type !== 'select' && this.typesInfo[this.componentType].fields[key].required) {
-          let inputField: HTMLElement = <HTMLElement>document.querySelector('ion-input.'+key+' input');
+          let inputField: HTMLElement = <HTMLElement>document.querySelector('ion-input.' + key + ' input');
           inputField.focus();
           inputField.blur();
           inputField.focus();

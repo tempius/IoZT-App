@@ -44,9 +44,16 @@
           </ion-buttons>
 
           <!-- switch -->
-          <ion-toggle *ngIf="component.componentType === 'switch' && component.state !== undefined && component.connection" checked={{component.state}}
-            (ionChange)="switchChange($event, component)"></ion-toggle>
+          <ion-toggle *ngIf="component.componentType === 'switch' && component.state !== undefined && component.connection"
+            checked={{component.state}} (ionChange)="switchChange($event, component)"></ion-toggle>
           <ion-spinner item-end name="dots" *ngIf="component.componentType === 'switch' && component.state === undefined && component.connection"></ion-spinner>
+
+          <!-- double switch -->
+          <ion-toggle *ngIf="component.componentType === 'double switch' && component.state !== undefined && component.connection"
+            checked={{component.state}} (ionChange)="switchChange($event, component)"></ion-toggle>
+          <ion-toggle *ngIf="component.componentType === 'double switch' && component.state2 !== undefined && component.connection"
+            checked={{component.state2}} (ionChange)="switchChange($event, component, 'state2')"></ion-toggle>
+          <ion-spinner item-end name="dots" *ngIf="component.componentType === 'double switch' && (component.state === undefined || component.state2 === undefined) && component.connection"></ion-spinner>
 
           <!-- connection failed -->
           <ion-buttons item-content end *ngIf="!component.connection">

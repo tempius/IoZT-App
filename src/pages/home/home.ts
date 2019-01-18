@@ -17,8 +17,8 @@ export class HomePage {
   @ViewChild(Content) content: Content;
   componentOptions: ItemSliding;
   removeAlert: any;
-  storedComponents: Array<{ componentType: string, componentName: string, protocol: string, address: string, port?: string, actionI: string, actionO: string }>;
-  components: Array<{ componentType: string, componentName: string, state?: boolean, protocol: string, address: string, port?: string, actionI: string, actionO: string, timer?: any, connection?: boolean, socket?: WebSocket }>;
+  storedComponents: Array<{ componentType: string, componentName: string, protocol: string, address: string, port?: string, actionI: string, actionO: string, actionI2?: string, actionO2?: string }>;
+  components: Array<{ componentType: string, componentName: string, state?: boolean, state2?: boolean, protocol: string, address: string, port?: string, actionI: string, actionO: string, actionI2?: string, actionO2?: string, timer?: any, connection?: boolean, socket?: WebSocket }>;
   reorder: boolean;
   timeout: number = 3000;
 
@@ -100,7 +100,10 @@ export class HomePage {
     // When data is received
     component.socket.onmessage = function (event) {
       clearTimeout(component.timer);
-      component.state = event.data === 'on' ? true : false;
+      if (event.data === 'on' || event.data === 'off')
+        component.state = event.data === 'on' ? true : false;
+      else if (event.data === 'on2' || event.data === 'off2')
+        component.state2 = event.data === 'on2' ? true : false;
     }
 
     // A connection could not be made
@@ -121,6 +124,7 @@ export class HomePage {
   closeWebsocket(component, onCloseEvent = false) {
     clearTimeout(component.timer);
     component.state = undefined;
+    component.state2 = undefined;
     component.connection = false;
     if (!onCloseEvent) component.socket.close();
   }
@@ -133,6 +137,7 @@ export class HomePage {
 
   connectComponent(component) {
     component.state = undefined;
+    component.state2 = undefined;
     component.connection = true;
     if (component.protocol === 'ws') {
       this.websocketEventAdd(component);
@@ -142,6 +147,7 @@ export class HomePage {
       this.http.get(component.protocol + '://' + component.address + port).timeout(this.timeout).subscribe(
         data => {
           component.state = false;
+          component.state2 = false;
         },
         err => {
           console.error('Error:', err);
@@ -202,16 +208,23 @@ export class HomePage {
     }
   }
 
-  sendAction(component, url, event = { checked: false }) {
+  sendAction(component, url, event = { checked: false }, state = null) {
+
     component.connection = true;
     this.http.post(url, {}).timeout(this.timeout).subscribe(
       data => {
-        component.state = event.checked;
+        if (state)
+          component[state] = event.checked;
+        else
+          component.state = event.checked;
       },
       err => {
         console.error('Error:', err);
         event.checked = !event.checked;
-        component.state = undefined;
+        if (state)
+          component[state] = undefined;
+        else
+          component.state = undefined;
         component.connection = false;
       }
     );
@@ -222,13 +235,14 @@ export class HomePage {
     this.sendAction(component, component.protocol + '://' + component.address + port + component.actionI);
   }
 
-  switchChange(event, component) {
-    if (event.checked !== component.state) {
+  switchChange(event, component, state = null) {
+    const componentState = state ? component[state] : component.state;
+    if (event.checked !== componentState) {
       if (component.protocol === 'ws') {
         //verify connection
         if (component.socket.readyState === component.socket.OPEN) {
           // send data to the server
-          component.socket.send(event.checked ? 'on' : 'off');
+          component.socket.send(event.checked ? state !== 'state2' ? 'on' : 'on2' : state !== 'state2' ? 'off' : 'off2');
           component.timer = setTimeout(() => {
             this.closeWebsocket(component);
           }, this.timeout);
@@ -240,7 +254,7 @@ export class HomePage {
       }
       else {
         const port = component.port ? ':' + component.port : '';
-        this.sendAction(component, component.protocol + '://' + component.address + port + (event.checked ? component.actionI : component.actionO), event);
+        this.sendAction(component, component.protocol + '://' + component.address + port + (event.checked ? component.actionI : component.actionO), event, state);
       }
     }
   }

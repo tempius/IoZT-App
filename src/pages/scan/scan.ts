@@ -16,7 +16,7 @@ import { HomePage } from '../home/home';
 export class ScanPage {
   scanning: boolean = true;
   counter: number = 255;
-  components: Array<{ componentType: string, componentName: string, state?: boolean, address: string, actionI?: string, actionO?: string, websocketPort?: string, connection?: boolean }>;
+  components: Array<{ componentType: string, componentName: string, state?: boolean, state2?: boolean, address: string, actionI?: string, actionO?: string, actionI2?: string, actionO2?: string, websocketPort?: string, connection?: boolean }>;
   showLogs: boolean = false;
   logs: string = '';
   msg: string = 'Não foram encontrados componentes!';

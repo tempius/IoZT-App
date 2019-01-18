@@ -1,8 +1,24 @@
 page-scan {
     ion-content {
-        ion-item-sliding {
-            margin-right: auto;
-            margin-left: auto;
+        .components-container {
+            margin-bottom: 83px;
+            ion-item-sliding {
+                margin-right: auto;
+                margin-left: auto;
+                ion-item {
+                    .item-inner {
+                        padding-top: 10px;
+                        padding-bottom: 10px;
+                    }
+                    .alpha-edit {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        height: 100%;
+                        width: 100%;
+                    }
+                }
+            }
         }
         .message-container,
         .logs-container {
