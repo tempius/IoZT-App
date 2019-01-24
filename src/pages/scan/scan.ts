@@ -16,7 +16,7 @@ import { HomePage } from '../home/home';
 export class ScanPage {
   scanning: boolean = true;
   counter: number = 255;
-  components: Array<{ firmware: number, componentType: string, componentName: string, state?: boolean, state2?: boolean, address: string, actionI?: string, actionO?: string, actionI2?: string, actionO2?: string, websocketPort?: string, connection?: boolean }>;
+  components: Array<{ firmware: number, espName: string, componentType: string, componentName: string, state?: boolean, state2?: boolean, address: string, actionI?: string, actionO?: string, actionI2?: string, actionO2?: string, websocketPort?: string, connection?: boolean }>;
   addedComponents: Object = {};
   showLogs: boolean = false;
   logs: string = '';
@@ -50,6 +50,7 @@ export class ScanPage {
           if (data.firmware && data.componentType && data.componentName) {
             this.logs += 'success: ' + ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index + '\n';
             data.address = ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index;
+            data.espName = data.componentName;
             this.components.push(data);
           }
           else {

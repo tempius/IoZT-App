@@ -17,8 +17,8 @@ export class HomePage {
   @ViewChild(Content) content: Content;
   componentOptions: ItemSliding;
   removeAlert: any;
-  storedComponents: Array<{ firmware: number, componentType: string, componentName: string, protocol: string, address: string, port?: string, actionI: string, actionO: string, actionI2?: string, actionO2?: string }>;
-  components: Array<{ firmware: number, componentType: string, componentName: string, state?: boolean, state2?: boolean, protocol: string, address: string, port?: string, actionI: string, actionO: string, actionI2?: string, actionO2?: string, timer?: any, connection?: boolean, socket?: WebSocket }>;
+  storedComponents: Array<{ firmware: number, espName: string, componentType: string, componentName: string, protocol: string, address: string, port?: string, actionI: string, actionO: string, actionI2?: string, actionO2?: string }>;
+  components: Array<{ firmware: number, espName: string, componentType: string, componentName: string, state?: boolean, state2?: boolean, protocol: string, address: string, port?: string, actionI: string, actionO: string, actionI2?: string, actionO2?: string, timer?: any, connection?: boolean, socket?: WebSocket }>;
   reorder: boolean;
   timeout: number = 3000;
 

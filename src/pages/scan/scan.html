@@ -20,8 +20,8 @@
             Adicionar
           </button>
           <button ion-button (click)="addComponent(component)" *ngIf="addedComponents[component.componentName]">
-            <ion-icon name="add"></ion-icon>
-            Adicionado ({{addedComponents[component.componentName].length}})
+            <ion-icon name="checkmark"> ({{addedComponents[component.componentName].length}})</ion-icon>
+            Adicionar
           </button>
         </ion-item-options>
 
