@@ -15,9 +15,13 @@
       <ion-item-sliding col-xs-12 col-sm-9 col-md-6 col-lg-5 col-xl-4 no-padding #slidingItem *ngFor="let component of components; let i = index">
 
         <ion-item-options side="left">
-          <button ion-button color="secondary" (click)="addComponent(component)">
+          <button ion-button color="secondary" (click)="addComponent(component)" *ngIf="!addedComponents[component.componentName]">
             <ion-icon name="add"></ion-icon>
             Adicionar
+          </button>
+          <button ion-button (click)="addComponent(component)" *ngIf="addedComponents[component.componentName]">
+            <ion-icon name="add"></ion-icon>
+            Adicionado ({{addedComponents[component.componentName].length}})
           </button>
         </ion-item-options>
 

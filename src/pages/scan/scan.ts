@@ -16,7 +16,8 @@ import { HomePage } from '../home/home';
 export class ScanPage {
   scanning: boolean = true;
   counter: number = 255;
-  components: Array<{ componentType: string, componentName: string, state?: boolean, state2?: boolean, address: string, actionI?: string, actionO?: string, actionI2?: string, actionO2?: string, websocketPort?: string, connection?: boolean }>;
+  components: Array<{ firmware: number, componentType: string, componentName: string, state?: boolean, state2?: boolean, address: string, actionI?: string, actionO?: string, actionI2?: string, actionO2?: string, websocketPort?: string, connection?: boolean }>;
+  addedComponents: Object = {};
   showLogs: boolean = false;
   logs: string = '';
   msg: string = 'Não foram encontrados componentes!';
@@ -27,7 +28,10 @@ export class ScanPage {
 
     this.networkInterface.getWiFiIPAddress().then(
       net => {
-        this.scanNetwork(net);
+        /** tempo para renderizar a pagina */
+        setTimeout(() => {
+          this.scanNetwork(net);
+        }, 100);
       },
       err => {
         this.logs += 'Sem rede para procurar!\n';
@@ -41,9 +45,9 @@ export class ScanPage {
   scanNetwork(net) {
     const ipRange = net.ip.split('.');
     for (let index = 1; index <= 255; index++) {
-      this.http.get('http://' + ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index + '/scan').timeout(this.timeout).map((res: Response) => res.json()).subscribe(
+      this.http.get('http://' + ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index + '/esp-scan').timeout(this.timeout).map((res: Response) => res.json()).subscribe(
         data => {
-          if (data.componentType) {
+          if (data.firmware && data.componentType && data.componentName) {
             this.logs += 'success: ' + ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index + '\n';
             data.address = ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index;
             this.components.push(data);
@@ -73,6 +77,8 @@ export class ScanPage {
   }
 
   addComponent(component) {
+    if (!this.addedComponents[component.componentName]) this.addedComponents[component.componentName] = [];
+    this.addedComponents[component.componentName].push(component);
     const storedComponents = localStorage.getItem('Components') ? JSON.parse(localStorage.getItem('Components')) : [];
     storedComponents.push(component);
     localStorage.setItem('Components', JSON.stringify(storedComponents));
