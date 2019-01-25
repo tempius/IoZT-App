@@ -16,7 +16,7 @@ import { HomePage } from '../home/home';
 export class ScanPage {
   scanning: boolean = true;
   counter: number = 255;
-  components: Array<{ firmware: number, espName: string, componentType: string, componentName: string, state?: boolean, state2?: boolean, address: string, actionI?: string, actionO?: string, actionI2?: string, actionO2?: string, websocketPort?: string, connection?: boolean }>;
+  components: Array<{ firmware: number, esp: string, name: string, type: string, componentName: string, state?: boolean, state2?: boolean, address: string, actionI?: string, actionO?: string, actionI2?: string, actionO2?: string, websocketPort?: string, connection?: boolean }>;
   addedComponents: Object = {};
   showLogs: boolean = false;
   logs: string = '';
@@ -25,6 +25,15 @@ export class ScanPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private networkInterface: NetworkInterface, public http: Http) {
     this.components = [];
+
+    /** verifica os componentes ja adicionados */
+    const storedComponents = localStorage.getItem('Components') ? JSON.parse(localStorage.getItem('Components')) : [];
+    storedComponents.forEach(component => {
+      if (component && component.name) {
+        if (!this.addedComponents[component.name]) this.addedComponents[component.name] = [];
+        this.addedComponents[component.name].push(component);
+      }
+    });
 
     this.networkInterface.getWiFiIPAddress().then(
       net => {
@@ -47,10 +56,10 @@ export class ScanPage {
     for (let index = 1; index <= 255; index++) {
       this.http.get('http://' + ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index + '/esp-scan').timeout(this.timeout).map((res: Response) => res.json()).subscribe(
         data => {
-          if (data.firmware && data.componentType && data.componentName) {
+          if (data.firmware && data.type && data.name && data.esp) {
             this.logs += 'success: ' + ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index + '\n';
             data.address = ipRange[0] + '.' + ipRange[1] + '.' + ipRange[2] + '.' + index;
-            data.espName = data.componentName;
+            data.componentName = data.name;
             this.components.push(data);
           }
           else {
@@ -78,8 +87,8 @@ export class ScanPage {
   }
 
   addComponent(component) {
-    if (!this.addedComponents[component.componentName]) this.addedComponents[component.componentName] = [];
-    this.addedComponents[component.componentName].push(component);
+    if (!this.addedComponents[component.name]) this.addedComponents[component.name] = [];
+    this.addedComponents[component.name].push(component);
     const storedComponents = localStorage.getItem('Components') ? JSON.parse(localStorage.getItem('Components')) : [];
     storedComponents.push(component);
     localStorage.setItem('Components', JSON.stringify(storedComponents));

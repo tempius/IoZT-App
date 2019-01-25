@@ -17,8 +17,8 @@ export class HomePage {
   @ViewChild(Content) content: Content;
   componentOptions: ItemSliding;
   removeAlert: any;
-  storedComponents: Array<{ firmware: number, espName: string, componentType: string, componentName: string, protocol: string, address: string, port?: string, actionI: string, actionO: string, actionI2?: string, actionO2?: string }>;
-  components: Array<{ firmware: number, espName: string, componentType: string, componentName: string, state?: boolean, state2?: boolean, protocol: string, address: string, port?: string, actionI: string, actionO: string, actionI2?: string, actionO2?: string, timer?: any, connection?: boolean, socket?: WebSocket }>;
+  storedComponents: Array<{ firmware: number, esp: string, name: string, type: string, componentName: string, protocol: string, address: string, port?: string, actionI: string, actionO: string, actionI2?: string, actionO2?: string }>;
+  components: Array<{ firmware: number, esp: string, name: string, type: string, componentName: string, state?: boolean, state2?: boolean, protocol: string, address: string, port?: string, actionI: string, actionO: string, actionI2?: string, actionO2?: string, timer?: any, connection?: boolean, socket?: WebSocket }>;
   reorder: boolean;
   timeout: number = 3000;
 
@@ -100,10 +100,10 @@ export class HomePage {
     // When data is received
     component.socket.onmessage = function (event) {
       clearTimeout(component.timer);
-      if (event.data === 'on' || event.data === 'off')
-        component.state = event.data === 'on' ? true : false;
-      else if (event.data === 'on2' || event.data === 'off2')
-        component.state2 = event.data === 'on2' ? true : false;
+      const json = JSON.parse(event.data);
+      Object.keys(json).forEach(key => {
+        if (key in component) component[key] = json[key] === 'on' ? true : json[key] === 'off' ? false : json[key];
+      });
     }
 
     // A connection could not be made
@@ -209,7 +209,6 @@ export class HomePage {
   }
 
   sendAction(component, url, event = { checked: false }, state = null) {
-
     component.connection = true;
     this.http.post(url, {}).timeout(this.timeout).subscribe(
       data => {
@@ -241,8 +240,12 @@ export class HomePage {
       if (component.protocol === 'ws') {
         //verify connection
         if (component.socket.readyState === component.socket.OPEN) {
+          let json = {
+            type: state ? state : 'state',
+            msg: event.checked ? 'on' : 'off',
+          };
           // send data to the server
-          component.socket.send(event.checked ? state !== 'state2' ? 'on' : 'on2' : state !== 'state2' ? 'off' : 'off2');
+          component.socket.send(JSON.stringify(json));
           component.timer = setTimeout(() => {
             this.closeWebsocket(component);
           }, this.timeout);
@@ -257,6 +260,16 @@ export class HomePage {
         this.sendAction(component, component.protocol + '://' + component.address + port + (event.checked ? component.actionI : component.actionO), event, state);
       }
     }
+  }
+
+  updateFirmware(component) {
+    let json = {
+      type: 'update',
+      msg: 'https://github.com/tempius/IoZT-App/releases/download/1.0.1/IoZT-ESP.generic.bin',
+      fingerprint: 'CA 06 F5 6B 25 8B 7A 0D 4F 2B 05 47 09 39 47 86 51 15 19 84',
+    };
+    // send data to the server
+    component.socket.send(JSON.stringify(json));
   }
 
 }

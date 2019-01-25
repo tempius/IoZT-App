@@ -14,13 +14,13 @@ export class AddPage {
     switch: { title: string, fields: {} },
     "double switch": { title: string, fields: {} },
   };
-  componentTypes: Array<{}>;
+  types: Array<{}>;
   typeFields: Array<{}>;
 
   //componentSelected: string;
 
   /** form fields */
-  componentType: string;
+  type: string;
   componentName: string;
   fieldProtocol: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string, types: Array<{}>, selectOptions: Object };
   fieldAddress: { label: string, type: string, required: boolean, placeholder: string, value: string, name: string };
@@ -150,16 +150,16 @@ export class AddPage {
       },
     };
 
-    this.componentTypes = Object.keys(this.typesInfo);
+    this.types = Object.keys(this.typesInfo);
 
     if (this.component && Object.keys(this.component).length) {
       this.editingComponent = true;
-      this.componentType = this.component.componentType;
+      this.type = this.component.type;
       this.componentName = this.component.componentName;
-      this.typeFields = Object.keys(this.typesInfo[this.component.componentType].fields);
+      this.typeFields = Object.keys(this.typesInfo[this.component.type].fields);
 
       this.typeFields.forEach(field => {
-        this.typesInfo[this.component.componentType].fields[String(field)].value = this.component[String(field)];
+        this.typesInfo[this.component.type].fields[String(field)].value = this.component[String(field)];
       });
     }
 
@@ -205,7 +205,7 @@ export class AddPage {
     }
     else {
       Object.keys(form.controls).forEach(key => {
-        if (form.controls[key].status === 'INVALID' && this.typesInfo[this.componentType].fields[key] && this.typesInfo[this.componentType].fields[key].type !== 'select' && this.typesInfo[this.componentType].fields[key].required) {
+        if (form.controls[key].status === 'INVALID' && this.typesInfo[this.type].fields[key] && this.typesInfo[this.type].fields[key].type !== 'select' && this.typesInfo[this.type].fields[key].required) {
           let inputField: HTMLElement = <HTMLElement>document.querySelector('ion-input.' + key + ' input');
           inputField.focus();
           inputField.blur();

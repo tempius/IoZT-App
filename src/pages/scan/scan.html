@@ -20,7 +20,7 @@
             Adicionar
           </button>
           <button ion-button (click)="addComponent(component)" *ngIf="addedComponents[component.componentName]">
-            <ion-icon name="checkmark"> ({{addedComponents[component.componentName].length}})</ion-icon>
+            <ion-icon>({{addedComponents[component.componentName].length}})</ion-icon>
             Adicionar
           </button>
         </ion-item-options>
@@ -29,7 +29,7 @@
           <ion-label>{{component.componentName}}</ion-label>
 
           <!-- button -->
-          <ion-buttons item-content end *ngIf="component.componentType === 'button'">
+          <ion-buttons item-content end *ngIf="component.type === 'button'">
             <button icon-end ion-button round>
               <span>Push</span>
               <ion-icon name="power"></ion-icon>
@@ -37,11 +37,11 @@
           </ion-buttons>
 
           <!-- switch -->
-          <ion-toggle *ngIf="component.componentType === 'switch'"></ion-toggle>
+          <ion-toggle *ngIf="component.type === 'switch'"></ion-toggle>
 
           <!-- double switch -->
-          <ion-toggle *ngIf="component.componentType === 'double switch'"></ion-toggle>
-          <ion-toggle *ngIf="component.componentType === 'double switch'"></ion-toggle>
+          <ion-toggle *ngIf="component.type === 'double switch'"></ion-toggle>
+          <ion-toggle *ngIf="component.type === 'double switch'"></ion-toggle>
 
         </ion-item>
       </ion-item-sliding>
